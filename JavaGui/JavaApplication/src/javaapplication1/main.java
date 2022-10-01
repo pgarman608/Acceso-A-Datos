@@ -3,19 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javaapplication;
+package javaapplication1;
 
 /**
  *
  * @author Serrperry
  */
-public class JavaApplication {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
+public class main {
+    public static void main(String args[]){
+        Frame1 f1 = new Frame1();
     }
-    
 }
