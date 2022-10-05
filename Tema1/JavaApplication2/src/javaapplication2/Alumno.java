@@ -82,9 +82,6 @@ public class Alumno implements Serializable{
     public Date getFechaNacMes() {
         return fechaNac;
     }
-    public Date getFechaNac() {
-        return fechaNac;
-    }
     public void setFechaNac(Date fechaNac) {
         this.fechaNac = fechaNac;
     }
