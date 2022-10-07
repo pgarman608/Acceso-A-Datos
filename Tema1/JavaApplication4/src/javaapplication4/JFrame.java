@@ -1,10 +1,24 @@
 package javaapplication4;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class JFrame extends javax.swing.JFrame {
     //expediente = 4 bytes (int)
@@ -14,10 +28,26 @@ public class JFrame extends javax.swing.JFrame {
     //nota2 = 8 ()
     //notaFinal = 8 ()
     private final int TAMANO = 248;
-    private long pos;
+    private File f1;
+    private RandomAccessFile raf1;
+    private Long pos;
+    private DefaultTableModel modeloTabla;
     public JFrame() {
         initComponents();
-        cargarDatos();
+        this.f1 = new File("Alumno.dat");
+        this.modeloTabla = (DefaultTableModel) jt_Tabla.getModel();
+        f1 = new File("Alumno.dat");
+        try {
+            raf1 = new RandomAccessFile(f1,"rw");
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "No se encuentra el fichero donde vamos a escribir");
+        }
+        
+        try {
+            actualizarTabla();
+        } catch (CharacterCodingException ex) {
+            Logger.getLogger(JFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -33,18 +63,17 @@ public class JFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jtf_Posicion = new javax.swing.JTextField();
         jtf_Nombre = new javax.swing.JTextField();
-        jtf_Nota1 = new javax.swing.JTextField();
+        jtf_FechaN = new javax.swing.JTextField();
+        jtf_Nota = new javax.swing.JTextField();
         jtf_Nota2 = new javax.swing.JTextField();
-        jtf_NotaFinal = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jt_Tabla = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
-        jtf_Fecha = new javax.swing.JTextField();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jm_Alta = new javax.swing.JMenu();
-        jm_Baja = new javax.swing.JMenu();
-        jm_Consultar = new javax.swing.JMenu();
-        jm_Modificar = new javax.swing.JMenu();
+        jtf_NotaF = new javax.swing.JTextField();
+        jbt_Alta = new javax.swing.JButton();
+        jbt_Baja = new javax.swing.JButton();
+        jbt_Consulta = new javax.swing.JButton();
+        jbt_Modificar = new javax.swing.JButton();
 
         jMenu3.setText("jMenu3");
 
@@ -76,11 +105,11 @@ public class JFrame extends javax.swing.JFrame {
 
         jtf_Nombre.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jtf_Nota1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jtf_FechaN.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jtf_Nota.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jtf_Nota2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
-        jtf_NotaFinal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jt_Tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -103,55 +132,68 @@ public class JFrame extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel6.setText("Fecha Nac");
 
-        jtf_Fecha.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jtf_NotaF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jMenuBar1.setMinimumSize(new java.awt.Dimension(0, 3));
+        jbt_Alta.setText("Alta");
+        jbt_Alta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbt_AltaActionPerformed(evt);
+            }
+        });
 
-        jm_Alta.setText("Alta");
-        jMenuBar1.add(jm_Alta);
+        jbt_Baja.setText("Baja");
 
-        jm_Baja.setText("Baja");
-        jMenuBar1.add(jm_Baja);
+        jbt_Consulta.setText("Consulta");
 
-        jm_Consultar.setText("Consultar");
-        jMenuBar1.add(jm_Consultar);
-
-        jm_Modificar.setText("Modificar");
-        jMenuBar1.add(jm_Modificar);
-
-        setJMenuBar(jMenuBar1);
+        jbt_Modificar.setText("Modificar");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jtf_Posicion))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4))
-                        .addGap(18, 18, 18)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel3))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel6)))
+                        .addGap(14, 14, 14)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jtf_Nota1)
-                            .addComponent(jtf_Nota2)
+                            .addComponent(jtf_FechaN)
                             .addComponent(jtf_Nombre)))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jtf_NotaFinal, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
-                            .addComponent(jtf_Fecha))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jtf_Posicion))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(18, 18, 18)
+                                .addComponent(jtf_NotaF, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jtf_Nota2)
+                                    .addComponent(jtf_Nota)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jbt_Alta)
+                                .addGap(18, 18, 18)
+                                .addComponent(jbt_Baja)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jbt_Consulta)
+                                .addGap(18, 18, 18)
+                                .addComponent(jbt_Modificar)))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,27 +208,107 @@ public class JFrame extends javax.swing.JFrame {
                     .addComponent(jtf_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jtf_Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtf_FechaN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jtf_Nota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jtf_Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jtf_NotaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(jtf_NotaF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jtf_Fecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jbt_Alta)
+                    .addComponent(jbt_Baja)
+                    .addComponent(jbt_Consulta)
+                    .addComponent(jbt_Modificar))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jbt_AltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_AltaActionPerformed
+        System.out.println("Hola");
+        int xne = 0;
+        int alta = -1;
+        try{
+            pos = ((Long.parseLong(this.jtf_Posicion.getText())-1) * TAMANO);
+        }catch(NumberFormatException nfe){
+            JOptionPane.showMessageDialog(this, "Introduzca numeros en el apartado de la posicion");
+        }
+        try{
+            raf1.seek(pos);
+            xne = raf1.readInt();
+            System.out.println("Identificador = " + xne);
+            if(xne == 0){
+                alta = 0;
+            }            
+        }catch(IOException ex){
+            //si da una excepcion significa que es la primera vez y por lo tanto esta vacio y se
+            //puede escribir
+            alta = 0;
+        }
+        if (alta == 0) {
+            try{
+                try{                    
+                    //leo el identificador ya que ha sumado automaticamente 4
+                    xne = Integer.parseInt(jtf_Posicion.getText());                   
+                }catch(NumberFormatException ex){
+                    JOptionPane.showMessageDialog(this, "Formato numérico no correcto");
+                }
+                raf1.seek(pos);
+                raf1.writeInt(xne);
+                StringBuffer str1 = new StringBuffer(this.jtf_Nombre.getText());
+                str1.setLength(100);
+                System.out.println(str1.toString());
+                raf1.writeChars(str1.toString());
+                Date dat = null;
+                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy"); 
+                try {
+                    dat = formato.parse(this.jtf_FechaN.getText());
+                } catch (ParseException ex) {
+                    JOptionPane.showMessageDialog(this, "El formato de la fecha es incorrecto");
+                }
+                System.out.println(formato.format(dat));
+                raf1.writeChars(formato.format(dat));
+                int numAux = 0;
+                try {
+                    numAux = 1;
+                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota.getText()));
+                    numAux = 2;
+                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota2.getText()));
+                    numAux = 3;
+                    raf1.writeDouble(Double.parseDouble(this.jtf_NotaF.getText()));
+                } catch (NumberFormatException e) {
+                    switch(numAux){
+                        case 1:
+                            JOptionPane.showMessageDialog(this, "EL formato de la nota 1 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                            break;
+                        case 2:
+                            JOptionPane.showMessageDialog(this, "EL formato de la nota 2 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                            break;
+                        case 3:
+                            JOptionPane.showMessageDialog(this, "EL formato de la nota final es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                            break;
+                    }
+                }
+                this.actualizarTabla();
+            }catch(IOException ex){
+                JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "El Numero de indicador ya existe");
+        }
+    }//GEN-LAST:event_jbt_AltaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -222,7 +344,6 @@ public class JFrame extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -231,38 +352,59 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JMenu jm_Alta;
-    private javax.swing.JMenu jm_Baja;
-    private javax.swing.JMenu jm_Consultar;
-    private javax.swing.JMenu jm_Modificar;
+    private javax.swing.JButton jbt_Alta;
+    private javax.swing.JButton jbt_Baja;
+    private javax.swing.JButton jbt_Consulta;
+    private javax.swing.JButton jbt_Modificar;
     private javax.swing.JTable jt_Tabla;
-    private javax.swing.JTextField jtf_Fecha;
+    private javax.swing.JTextField jtf_FechaN;
     private javax.swing.JTextField jtf_Nombre;
-    private javax.swing.JTextField jtf_Nota1;
+    private javax.swing.JTextField jtf_Nota;
     private javax.swing.JTextField jtf_Nota2;
-    private javax.swing.JTextField jtf_NotaFinal;
+    private javax.swing.JTextField jtf_NotaF;
     private javax.swing.JTextField jtf_Posicion;
     // End of variables declaration//GEN-END:variables
 
-    private void cargarDatos() {
-        File f = new File("Alumnos.dat");
+    private void actualizarTabla() throws CharacterCodingException {
+        this.modeloTabla.setRowCount(0);
         try {
-            //Abrimos fichero de acceso directo
-            RandomAccessFile raf = new RandomAccessFile(f,"rw");
-            //Recorremos fichero
-            int numeroRegistros = (int) (raf.length() / TAMANO);
-            for(int i = 1; i < numeroRegistros; i++){
-                pos = (i-1) * TAMANO;
+            int nr =(int) this.raf1.length() /TAMANO;
+            for (int i = 1; i <= nr; i++) {
+                pos = (long)(i-1) * TAMANO;
+                raf1.seek(pos);
+                int aux = raf1.readInt();
+                System.out.println("Aux=" + aux);
+                if (aux != 0) {
+                    Object[] objs = new Object[6];
+                    objs[0] = aux;
+                    objs[1] = leerCaracteres(100);
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    Date dat = sdf.parse((String) leerCaracteres(10));
+                    objs[2] = sdf.format(dat);
+                    objs[3] = raf1.readDouble();
+                    objs[4] = raf1.readDouble();
+                    objs[5] = raf1.readDouble();
+                    this.modeloTabla.addRow(objs);
+                }
             }
-            String st = "";
-        }catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(this, "No se ha encontrado el fichero");
-        }catch(IOException io){
-            JOptionPane.showMessageDialog(this, "No se ha encontrado el fichero");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
+        } catch (ParseException ex) {
+            Logger.getLogger(JFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    private Object leerCaracteres(int limite){
+        String aux ="";
+        for(int j=0; j < limite; j++){
+            try{
+                aux = aux + raf1.readChar();
+            }catch(IOException ex){
+                //JOptionPane.showMessageDialog(this, "No se ha encontrado el fichero");
+            }
+        }
+        return aux;
     }
 }
