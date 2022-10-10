@@ -45,9 +45,7 @@ public class JFrame extends javax.swing.JFrame {
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(this, "No se encuentra el fichero donde vamos a escribir");
         }
-        try {
-            actualizarTabla();
-        } catch (CharacterCodingException ex) {}
+        actualizarTabla();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -155,6 +153,11 @@ public class JFrame extends javax.swing.JFrame {
         });
 
         jbt_Modificar.setText("Modificar");
+        jbt_Modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbt_ModificarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -251,7 +254,6 @@ public class JFrame extends javax.swing.JFrame {
         try{
             raf1.seek(pos);
             xne = raf1.readInt();
-            System.out.println("Identificador = " + xne);
             if(xne == 0){
                 alta = 0;
             }            
@@ -269,44 +271,43 @@ public class JFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Formato numérico no correcto");
                 }
                 raf1.seek(pos);
-                raf1.writeInt(xne);
-                byte[] str = new byte[200];
-                str = jtf_Nombre.getText().getBytes();
-                System.out.println(str.length);
-                this.actualizarTabla();
-                return;
-                
-//                Date dat = null;
-//                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy"); 
-//                try {
-//                    dat = formato.parse(this.jtf_FechaN.getText());
-//                } catch (ParseException ex) {
-//                    JOptionPane.showMessageDialog(this, "El formato de la fecha es incorrecto");
-//                }
-//                System.out.println(formato.format(dat));
-//                raf1.writeChars(formato.format(dat));
-//                int numAux = 0;
-//                try {
-//                    numAux = 1;
-//                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota1.getText()));
-//                    numAux = 2;
-//                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota2.getText()));
-//                    numAux = 3;
-//                    raf1.writeDouble(Double.parseDouble(this.jtf_NotaF.getText()));
-//                } catch (NumberFormatException e) {
-//                    switch(numAux){
-//                        case 1:
-//                            JOptionPane.showMessageDialog(this, "EL formato de la nota 1 es incorrecto (Escribir numeros como 5.2 o 9.34)");
-//                            break;
-//                        case 2:
-//                            JOptionPane.showMessageDialog(this, "EL formato de la nota 2 es incorrecto (Escribir numeros como 5.2 o 9.34)");
-//                            break;
-//                        case 3:
-//                            JOptionPane.showMessageDialog(this, "EL formato de la nota final es incorrecto (Escribir numeros como 5.2 o 9.34)");
-//                            break;
-//                    }
-//                }
-                
+                if ( jtf_Nombre.getText().length() < 100) {
+                    raf1.writeInt(xne);
+                    byte[] chars = ByteBuffer.allocate(100).put(this.jtf_Nombre.getText().getBytes()).array();
+                    raf1.writeChars(new String(chars));
+                    Date dat = null;
+                    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy"); 
+                    try {
+                        dat = formato.parse(this.jtf_FechaN.getText());
+                    } catch (ParseException ex) {
+                        JOptionPane.showMessageDialog(this, "El formato de la fecha es incorrecto");
+                    }
+                    raf1.writeChars(formato.format(dat));
+                    int numAux = 0;
+                    try {
+                        numAux = 1;
+                        raf1.writeDouble(Double.parseDouble(this.jtf_Nota1.getText()));
+                        numAux = 2;
+                        raf1.writeDouble(Double.parseDouble(this.jtf_Nota2.getText()));
+                        numAux = 3;
+                        raf1.writeDouble(Double.parseDouble(this.jtf_NotaF.getText()));
+                    } catch (NumberFormatException e) {
+                        switch(numAux){
+                            case 1:
+                                JOptionPane.showMessageDialog(this, "EL formato de la nota 1 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                                break;
+                            case 2:
+                                JOptionPane.showMessageDialog(this, "EL formato de la nota 2 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                                break;
+                            case 3:
+                                JOptionPane.showMessageDialog(this, "EL formato de la nota final es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                                break;
+                        }
+                    }
+                    this.actualizarTabla();
+                }else{
+                    JOptionPane.showMessageDialog(this,"Introduce un nombre menor de 100 caracteres");
+                }
             }catch(IOException ex){
                 JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
             }
@@ -353,27 +354,74 @@ public class JFrame extends javax.swing.JFrame {
             consulta = -1;
         }
         if (consulta == 0) {
-            jtf_Posicion.setText(""+xne);
-            try {
-                byte[] str = new byte[200];
-                raf1.read(str);
-                jtf_Nombre.setText(new String(str,"UTF-8"));
-                byte[] str2 = new byte[20];
-                raf1.read(str2);
-                jtf_FechaN.setText(new String(str2));
-                jtf_Nota1.setText("" + raf1.readDouble());
-                jtf_Nota2.setText("" + raf1.readDouble());
-                jtf_NotaF.setText("" + raf1.readDouble());
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this,"Error con el fichero");
-            }
+            verenJTF();
         }
     }//GEN-LAST:event_jbt_ConsultaActionPerformed
+    private void verenJTF(){
+        jtf_Posicion.setText(""+xne);
+        try {
+            byte[] str = new byte[200];
+            byte[] str2 = new byte[20];
+            raf1.readFully(str);
+            jtf_Nombre.setText(new String(str));
+            raf1.readFully(str2);
+            jtf_FechaN.setText(new String(str2));
+            jtf_Nota1.setText("" + raf1.readDouble());
+            jtf_Nota2.setText("" + raf1.readDouble());
+            jtf_NotaF.setText("" + raf1.readDouble());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,"Error con el fichero");
+        }
+    }
+    private void jbt_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_ModificarActionPerformed
+        this.calcularPos();
+        int modificar = 0;
+        try{
+            raf1.seek(pos);
+            xne = raf1.readInt();
+            if(xne == 0){
+                modificar = -1;
+            }            
+        }catch(IOException ex){
+            modificar = -1;
+        }
+        if (modificar == 0) {
+            
+        }
+    }//GEN-LAST:event_jbt_ModificarActionPerformed
     private void calcularPos(){
         try{
             pos = ((Long.parseLong(this.jtf_Posicion.getText())-1) * TAMANO);
         }catch(NumberFormatException nfe){
             JOptionPane.showMessageDialog(this, "Introduzca numeros en el apartado de la posicion");
+        }
+    }
+        private void actualizarTabla() {
+        this.modeloTabla.setRowCount(0);
+        try {
+            int nr =(int) this.raf1.length() /TAMANO;
+            for (int i = 1; i <= nr; i++) {
+                pos = (long)(i-1) * TAMANO;
+                raf1.seek(pos);
+                int aux = raf1.readInt();
+                if (aux != 0) {
+                    Object[] objs = new Object[6];
+                    objs[0] = aux;
+                    byte[] byte1 = new byte[200];
+                    raf1.readFully(byte1);
+                    objs[1] = new String(byte1);
+                    byte[] byte2 = new byte[20];
+                    raf1.readFully(byte2);
+                    System.out.println(new String(byte2));
+                    objs[2] = new String(byte2);
+                    objs[3] = raf1.readDouble();
+                    objs[4] = raf1.readDouble();
+                    objs[5] = raf1.readDouble();
+                    this.modeloTabla.addRow(objs);
+                }
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
         }
     }
     public static void main(String args[]) {
@@ -430,49 +478,4 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jtf_NotaF;
     private javax.swing.JTextField jtf_Posicion;
     // End of variables declaration//GEN-END:variables
-
-    private void actualizarTabla() throws CharacterCodingException {
-        this.modeloTabla.setRowCount(0);
-        try {
-            int nr =(int) this.raf1.length() /TAMANO;
-            for (int i = 1; i <= nr; i++) {
-                pos = (long)(i-1) * TAMANO;
-                raf1.seek(pos);
-                int aux = raf1.readInt();
-                System.out.println("Aux=" + aux);
-                if (aux != 0) {
-                    Object[] objs = new Object[6];
-                    objs[0] = aux;
-                    byte[] byte1 = new byte[200];
-                    raf1.readFully(byte1);
-                    objs[1] = new String(byte1);
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    byte[] byte2 = new byte[20];
-                    raf1.readFully(byte2);
-                    String pars = new String(byte2);
-                    Date dat = sdf.parse(pars);
-                    objs[2] = sdf.format(dat);
-                    objs[3] = raf1.readDouble();
-                    objs[4] = raf1.readDouble();
-                    objs[5] = raf1.readDouble();
-                    this.modeloTabla.addRow(objs);
-                }
-            }
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
-        } catch (ParseException ex) {
-            Logger.getLogger(JFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    private Object leerCaracteres(int limite){
-        String aux ="";
-        for(int j=0; j < limite; j++){
-            try{
-                aux = aux + raf1.readChar();
-            }catch(IOException ex){
-                //JOptionPane.showMessageDialog(this, "No se ha encontrado el fichero");
-            }
-        }
-        return aux;
-    }
 }
