@@ -444,11 +444,11 @@ public class JFrame extends javax.swing.JFrame {
                     Object[] objs = new Object[6];
                     objs[0] = aux;
                     byte[] byte1 = new byte[200];
-                    raf1.read(byte1);
+                    raf1.readFully(byte1);
                     objs[1] = new String(byte1);
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                     byte[] byte2 = new byte[20];
-                    raf1.read(byte2);
+                    raf1.readFully(byte2);
                     String pars = new String(byte2);
                     Date dat = sdf.parse(pars);
                     objs[2] = sdf.format(dat);
