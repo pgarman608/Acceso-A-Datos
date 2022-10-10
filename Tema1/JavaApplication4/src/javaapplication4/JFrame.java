@@ -14,6 +14,7 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,22 +33,21 @@ public class JFrame extends javax.swing.JFrame {
     private RandomAccessFile raf1;
     private Long pos;
     private DefaultTableModel modeloTabla;
+    private int xne;
     public JFrame() {
         initComponents();
         this.f1 = new File("Alumno.dat");
         this.modeloTabla = (DefaultTableModel) jt_Tabla.getModel();
         f1 = new File("Alumno.dat");
+        this.xne = 0;
         try {
             raf1 = new RandomAccessFile(f1,"rw");
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(this, "No se encuentra el fichero donde vamos a escribir");
         }
-        
         try {
             actualizarTabla();
-        } catch (CharacterCodingException ex) {
-            Logger.getLogger(JFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (CharacterCodingException ex) {}
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -64,7 +64,7 @@ public class JFrame extends javax.swing.JFrame {
         jtf_Posicion = new javax.swing.JTextField();
         jtf_Nombre = new javax.swing.JTextField();
         jtf_FechaN = new javax.swing.JTextField();
-        jtf_Nota = new javax.swing.JTextField();
+        jtf_Nota1 = new javax.swing.JTextField();
         jtf_Nota2 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jt_Tabla = new javax.swing.JTable();
@@ -83,7 +83,6 @@ public class JFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Consulta | Alumno |");
-        setPreferredSize(new java.awt.Dimension(650, 470));
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -107,7 +106,7 @@ public class JFrame extends javax.swing.JFrame {
 
         jtf_FechaN.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jtf_Nota.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jtf_Nota1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jtf_Nota2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -142,8 +141,18 @@ public class JFrame extends javax.swing.JFrame {
         });
 
         jbt_Baja.setText("Baja");
+        jbt_Baja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbt_BajaActionPerformed(evt);
+            }
+        });
 
         jbt_Consulta.setText("Consulta");
+        jbt_Consulta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbt_ConsultaActionPerformed(evt);
+            }
+        });
 
         jbt_Modificar.setText("Modificar");
 
@@ -184,7 +193,7 @@ public class JFrame extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jtf_Nota2)
-                                    .addComponent(jtf_Nota)))
+                                    .addComponent(jtf_Nota1)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jbt_Alta)
                                 .addGap(18, 18, 18)
@@ -212,7 +221,7 @@ public class JFrame extends javax.swing.JFrame {
                     .addComponent(jLabel6))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtf_Nota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtf_Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -237,14 +246,8 @@ public class JFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbt_AltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_AltaActionPerformed
-        System.out.println("Hola");
-        int xne = 0;
+        this.calcularPos();
         int alta = -1;
-        try{
-            pos = ((Long.parseLong(this.jtf_Posicion.getText())-1) * TAMANO);
-        }catch(NumberFormatException nfe){
-            JOptionPane.showMessageDialog(this, "Introduzca numeros en el apartado de la posicion");
-        }
         try{
             raf1.seek(pos);
             xne = raf1.readInt();
@@ -267,52 +270,112 @@ public class JFrame extends javax.swing.JFrame {
                 }
                 raf1.seek(pos);
                 raf1.writeInt(xne);
-                StringBuffer str1 = new StringBuffer(this.jtf_Nombre.getText());
-                str1.setLength(100);
-                System.out.println(str1.toString());
-                raf1.writeChars(str1.toString());
-                Date dat = null;
-                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy"); 
-                try {
-                    dat = formato.parse(this.jtf_FechaN.getText());
-                } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(this, "El formato de la fecha es incorrecto");
-                }
-                System.out.println(formato.format(dat));
-                raf1.writeChars(formato.format(dat));
-                int numAux = 0;
-                try {
-                    numAux = 1;
-                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota.getText()));
-                    numAux = 2;
-                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota2.getText()));
-                    numAux = 3;
-                    raf1.writeDouble(Double.parseDouble(this.jtf_NotaF.getText()));
-                } catch (NumberFormatException e) {
-                    switch(numAux){
-                        case 1:
-                            JOptionPane.showMessageDialog(this, "EL formato de la nota 1 es incorrecto (Escribir numeros como 5.2 o 9.34)");
-                            break;
-                        case 2:
-                            JOptionPane.showMessageDialog(this, "EL formato de la nota 2 es incorrecto (Escribir numeros como 5.2 o 9.34)");
-                            break;
-                        case 3:
-                            JOptionPane.showMessageDialog(this, "EL formato de la nota final es incorrecto (Escribir numeros como 5.2 o 9.34)");
-                            break;
-                    }
-                }
+                byte[] str = new byte[200];
+                str = jtf_Nombre.getText().getBytes();
+                System.out.println(str.length);
+                this.actualizarTabla();
+                return;
+                
+//                Date dat = null;
+//                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy"); 
+//                try {
+//                    dat = formato.parse(this.jtf_FechaN.getText());
+//                } catch (ParseException ex) {
+//                    JOptionPane.showMessageDialog(this, "El formato de la fecha es incorrecto");
+//                }
+//                System.out.println(formato.format(dat));
+//                raf1.writeChars(formato.format(dat));
+//                int numAux = 0;
+//                try {
+//                    numAux = 1;
+//                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota1.getText()));
+//                    numAux = 2;
+//                    raf1.writeDouble(Double.parseDouble(this.jtf_Nota2.getText()));
+//                    numAux = 3;
+//                    raf1.writeDouble(Double.parseDouble(this.jtf_NotaF.getText()));
+//                } catch (NumberFormatException e) {
+//                    switch(numAux){
+//                        case 1:
+//                            JOptionPane.showMessageDialog(this, "EL formato de la nota 1 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+//                            break;
+//                        case 2:
+//                            JOptionPane.showMessageDialog(this, "EL formato de la nota 2 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+//                            break;
+//                        case 3:
+//                            JOptionPane.showMessageDialog(this, "EL formato de la nota final es incorrecto (Escribir numeros como 5.2 o 9.34)");
+//                            break;
+//                    }
+//                }
+                
+            }catch(IOException ex){
+                JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "La posicion ya está completa");
+        }
+    }//GEN-LAST:event_jbt_AltaActionPerformed
+
+    private void jbt_BajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_BajaActionPerformed
+        this.calcularPos();
+        int baja = 0;
+        try{
+            raf1.seek(pos);
+            xne = raf1.readInt();
+            if(xne == 0){
+                baja = -1;
+            }            
+        }catch(IOException ex){
+            baja = -1;
+        }
+        if (baja == 0) {
+            try{
+                raf1.seek(pos);
+                raf1.writeInt(0);
                 this.actualizarTabla();
             }catch(IOException ex){
                 JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
             }
         }else{
-            JOptionPane.showMessageDialog(this, "El Numero de indicador ya existe");
+            JOptionPane.showMessageDialog(this, "La posicion no existe");
         }
-    }//GEN-LAST:event_jbt_AltaActionPerformed
+    }//GEN-LAST:event_jbt_BajaActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void jbt_ConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_ConsultaActionPerformed
+        this.calcularPos();
+        int consulta = 0;
+        try {
+            raf1.seek(this.pos);
+            xne = raf1.readInt();
+            if (xne == 0) {
+                consulta = -1;
+            }
+        } catch (IOException ex) {
+            consulta = -1;
+        }
+        if (consulta == 0) {
+            jtf_Posicion.setText(""+xne);
+            try {
+                byte[] str = new byte[200];
+                raf1.read(str);
+                jtf_Nombre.setText(new String(str,"UTF-8"));
+                byte[] str2 = new byte[20];
+                raf1.read(str2);
+                jtf_FechaN.setText(new String(str2));
+                jtf_Nota1.setText("" + raf1.readDouble());
+                jtf_Nota2.setText("" + raf1.readDouble());
+                jtf_NotaF.setText("" + raf1.readDouble());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,"Error con el fichero");
+            }
+        }
+    }//GEN-LAST:event_jbt_ConsultaActionPerformed
+    private void calcularPos(){
+        try{
+            pos = ((Long.parseLong(this.jtf_Posicion.getText())-1) * TAMANO);
+        }catch(NumberFormatException nfe){
+            JOptionPane.showMessageDialog(this, "Introduzca numeros en el apartado de la posicion");
+        }
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -362,7 +425,7 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JTable jt_Tabla;
     private javax.swing.JTextField jtf_FechaN;
     private javax.swing.JTextField jtf_Nombre;
-    private javax.swing.JTextField jtf_Nota;
+    private javax.swing.JTextField jtf_Nota1;
     private javax.swing.JTextField jtf_Nota2;
     private javax.swing.JTextField jtf_NotaF;
     private javax.swing.JTextField jtf_Posicion;
@@ -380,9 +443,14 @@ public class JFrame extends javax.swing.JFrame {
                 if (aux != 0) {
                     Object[] objs = new Object[6];
                     objs[0] = aux;
-                    objs[1] = leerCaracteres(100);
+                    byte[] byte1 = new byte[200];
+                    raf1.read(byte1);
+                    objs[1] = new String(byte1);
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    Date dat = sdf.parse((String) leerCaracteres(10));
+                    byte[] byte2 = new byte[20];
+                    raf1.read(byte2);
+                    String pars = new String(byte2);
+                    Date dat = sdf.parse(pars);
                     objs[2] = sdf.format(dat);
                     objs[3] = raf1.readDouble();
                     objs[4] = raf1.readDouble();
