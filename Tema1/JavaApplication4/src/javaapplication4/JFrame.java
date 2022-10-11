@@ -60,8 +60,6 @@ public class JFrame extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jtf_Posicion = new javax.swing.JTextField();
-        jtf_Nombre = new javax.swing.JTextField();
-        jtf_FechaN = new javax.swing.JTextField();
         jtf_Nota1 = new javax.swing.JTextField();
         jtf_Nota2 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -72,6 +70,8 @@ public class JFrame extends javax.swing.JFrame {
         jbt_Baja = new javax.swing.JButton();
         jbt_Consulta = new javax.swing.JButton();
         jbt_Modificar = new javax.swing.JButton();
+        jtf_FechaN = new javax.swing.JTextField();
+        jtf_Nombre = new javax.swing.JTextField();
 
         jMenu3.setText("jMenu3");
 
@@ -83,30 +83,15 @@ public class JFrame extends javax.swing.JFrame {
         setTitle("Consulta | Alumno |");
         setResizable(false);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Posicion");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Nota 1");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Nombre");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("Nota 2");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("Nota Final");
-
-        jtf_Posicion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
-        jtf_Nombre.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
-        jtf_FechaN.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
-        jtf_Nota1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
-        jtf_Nota2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jt_Tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -116,9 +101,16 @@ public class JFrame extends javax.swing.JFrame {
                 "Posicion", "Nombre", "FechaNac", "Nota 1", "Nota 2", "Nota final"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, true, false, false
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -126,10 +118,7 @@ public class JFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jt_Tabla);
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel6.setText("Fecha Nac");
-
-        jtf_NotaF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jbt_Alta.setText("Alta");
         jbt_Alta.addActionListener(new java.awt.event.ActionListener() {
@@ -165,46 +154,43 @@ public class JFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(jLabel3))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel6)))
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jtf_FechaN)
-                            .addComponent(jtf_Nombre)))
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtf_Posicion))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addComponent(jLabel5)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtf_NotaF, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jtf_Nota2)
+                            .addComponent(jtf_Nota1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jbt_Alta)
+                        .addGap(18, 18, 18)
+                        .addComponent(jbt_Baja)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jbt_Consulta)
+                        .addGap(18, 18, 18)
+                        .addComponent(jbt_Modificar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel3))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
                                 .addGap(18, 18, 18)
-                                .addComponent(jtf_Posicion))
+                                .addComponent(jtf_FechaN))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(18, 18, 18)
-                                .addComponent(jtf_NotaF, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel4))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jtf_Nota2)
-                                    .addComponent(jtf_Nota1)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jbt_Alta)
-                                .addGap(18, 18, 18)
-                                .addComponent(jbt_Baja)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jbt_Consulta)
-                                .addGap(18, 18, 18)
-                                .addComponent(jbt_Modificar)))))
+                                .addGap(4, 4, 4)
+                                .addComponent(jtf_Nombre)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -220,8 +206,8 @@ public class JFrame extends javax.swing.JFrame {
                     .addComponent(jtf_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtf_FechaN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                    .addComponent(jLabel6)
+                    .addComponent(jtf_FechaN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtf_Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -234,20 +220,19 @@ public class JFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jtf_NotaF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbt_Alta)
                     .addComponent(jbt_Baja)
                     .addComponent(jbt_Consulta)
                     .addComponent(jbt_Modificar))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
     private void jbt_AltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_AltaActionPerformed
         this.calcularPos();
         int alta = -1;
@@ -315,7 +300,6 @@ public class JFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "La posicion ya está completa");
         }
     }//GEN-LAST:event_jbt_AltaActionPerformed
-
     private void jbt_BajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_BajaActionPerformed
         this.calcularPos();
         int baja = 0;
@@ -340,7 +324,6 @@ public class JFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "La posicion no existe");
         }
     }//GEN-LAST:event_jbt_BajaActionPerformed
-
     private void jbt_ConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_ConsultaActionPerformed
         this.calcularPos();
         int consulta = 0;
@@ -354,12 +337,8 @@ public class JFrame extends javax.swing.JFrame {
             consulta = -1;
         }
         if (consulta == 0) {
-            verenJTF();
-        }
-    }//GEN-LAST:event_jbt_ConsultaActionPerformed
-    private void verenJTF(){
-        jtf_Posicion.setText(""+xne);
-        try {
+            jtf_Posicion.setText(""+xne);
+            try {
             byte[] str = new byte[200];
             byte[] str2 = new byte[20];
             raf1.readFully(str);
@@ -369,10 +348,11 @@ public class JFrame extends javax.swing.JFrame {
             jtf_Nota1.setText("" + raf1.readDouble());
             jtf_Nota2.setText("" + raf1.readDouble());
             jtf_NotaF.setText("" + raf1.readDouble());
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,"Error con el fichero");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,"Error con el fichero");
+            }
         }
-    }
+    }//GEN-LAST:event_jbt_ConsultaActionPerformed
     private void jbt_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_ModificarActionPerformed
         this.calcularPos();
         int modificar = 0;
@@ -386,7 +366,68 @@ public class JFrame extends javax.swing.JFrame {
             modificar = -1;
         }
         if (modificar == 0) {
-            
+            int cont = 0;
+            try{
+                if ( jtf_Nombre.getText().length() < 100) {
+                    if (jtf_Nombre.getText().length() != 0) {
+                        byte[] chars = ByteBuffer.allocate(100).put(this.jtf_Nombre.getText().getBytes()).array();
+                        raf1.writeChars(new String(chars));
+                    }else{
+                        raf1.skipBytes(200);
+                    }
+                    if (jtf_FechaN.getText().length() != 0) {
+                        Date dat = null;
+                        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy"); 
+                        try {
+                            dat = formato.parse(this.jtf_FechaN.getText());
+                        } catch (ParseException ex) {
+                            JOptionPane.showMessageDialog(this, "El formato de la fecha es incorrecto");
+                        }
+                        raf1.writeChars(formato.format(dat));
+                    }else{
+                        raf1.skipBytes(20);
+                    }
+                    
+                    int numAux = 0;
+                    try {
+                        if (jtf_Nota1.getText().length()!= 0) {
+                            numAux++;
+                            raf1.writeDouble(Double.parseDouble(this.jtf_Nota1.getText()));
+                        }else{
+                            raf1.skipBytes(8);
+                        }
+                        if (jtf_Nota1.getText().length()!= 0) {
+                            numAux++;
+                            raf1.writeDouble(Double.parseDouble(this.jtf_Nota2.getText()));
+                        }else{
+                            raf1.skipBytes(8);
+                        }
+                        if (jtf_Nota1.getText().length()!= 0) {
+                            numAux++;
+                            raf1.writeDouble(Double.parseDouble(this.jtf_NotaF.getText()));
+                        }else{
+                            raf1.skipBytes(8);
+                        }
+                    } catch (NumberFormatException e) {
+                        switch(numAux){
+                            case 1:
+                                JOptionPane.showMessageDialog(this, "EL formato de la nota 1 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                                break;
+                            case 2:
+                                JOptionPane.showMessageDialog(this, "EL formato de la nota 2 es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                                break;
+                            case 3:
+                                JOptionPane.showMessageDialog(this, "EL formato de la nota final es incorrecto (Escribir numeros como 5.2 o 9.34)");
+                                break;
+                        }
+                    }
+                    this.actualizarTabla();
+                }else{
+                    JOptionPane.showMessageDialog(this,"Introduce un nombre menor de 100 caracteres");
+                }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Hay problemas con el archivo");
+            }
         }
     }//GEN-LAST:event_jbt_ModificarActionPerformed
     private void calcularPos(){
@@ -396,7 +437,7 @@ public class JFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Introduzca numeros en el apartado de la posicion");
         }
     }
-        private void actualizarTabla() {
+    private void actualizarTabla() {
         this.modeloTabla.setRowCount(0);
         try {
             int nr =(int) this.raf1.length() /TAMANO;
@@ -412,7 +453,6 @@ public class JFrame extends javax.swing.JFrame {
                     objs[1] = new String(byte1);
                     byte[] byte2 = new byte[20];
                     raf1.readFully(byte2);
-                    System.out.println(new String(byte2));
                     objs[2] = new String(byte2);
                     objs[3] = raf1.readDouble();
                     objs[4] = raf1.readDouble();
