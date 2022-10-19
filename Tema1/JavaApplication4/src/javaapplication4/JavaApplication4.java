@@ -33,6 +33,8 @@ public class JavaApplication4 {
         System.out.println("<"+raiz.getTagName()+">");
         //Con el metodo getElementsByTagName(String) nos devolvera una lista de 
         //elements hijos del elemento anterior con el nombre de la tag seleccionado
+        //Con el metodo getChildNode() tendremos que comprobar posteriormente
+        //que sea de la clase Element o node y seria raiz.getChildNode()
         NodeList nodelist = doc1.getElementsByTagName("CD");
         //Con el metodo getlenght() nos dira el numero de nodos o element que ha
         //encontrado
@@ -43,6 +45,11 @@ public class JavaApplication4 {
             //Con el getNodeName() nos dara el nombre del nodo <(nombre)>
             //Con el getTextContent() nos dara el texto dentro de las boquillas
             //<>(texto)<>
+            
+            //if (node instanceof Element) { Esta forma es cuando usemos 
+            //                               getChildNote()
+            //    System.out.println("\t<"+node.getNodeName()+"> " + node.getTextContent() + " </" + node.getNodeName() + ">");
+            //}
             System.out.println("\t<"+node.getNodeName()+"> " + node.getTextContent() + " </" + node.getNodeName() + ">");
         }
         System.out.println("</"+raiz.getTagName()+">");
