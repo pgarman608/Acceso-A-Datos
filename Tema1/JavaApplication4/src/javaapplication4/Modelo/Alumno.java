@@ -1,33 +1,40 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package javaapplication4.Modelo;
 
+import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Date;
+import javaapplication4.Controlador.Utilities;
 
-/**
- *
- * @author Serrperry
- */
-public class Alumno {
-    private static int matricula = 0;
+public class Alumno implements Serializable{
+    private int matricula;
     private String nombre;
     private Date fechaNac;
-    private float notaFinal;
+    private float notaMedia;
     private int edad;
 
-    public Alumno(String nombre, Date fechaNac, float notaFinal, int edad) {
-        this.matricula++;
+    public Alumno(int matricula, String nombre, String fechaNac, float notaMedia, int edad) throws ParseException {
+        this.matricula = matricula;
         this.nombre = nombre;
-        this.fechaNac = fechaNac;
-        this.notaFinal = notaFinal;
+        this.setFechaNac(fechaNac);
+        this.notaMedia = notaMedia;
         this.edad = edad;
     }
 
-    public static int getMatricula() {
-        return matricula;
+    public Alumno() throws ParseException {
+        this.matricula = 1;
+        this.nombre = "";
+        this.setFechaNac("11/11/1111");
+        this.notaMedia = (float) 1.1;
+        this.edad = 1;
+    }
+    
+    public void setMatricula(int matricula){
+        this.matricula = matricula;
+    }
+    
+    public int getMatricula() {
+        return this.matricula;
     }
 
     public String getNombre() {
@@ -38,20 +45,20 @@ public class Alumno {
         this.nombre = nombre;
     }
 
-    public Date getFechaNac() {
-        return fechaNac;
+    public String getFechaNac() {
+        return Utilities.sdf.format(fechaNac);
     }
 
-    public void setFechaNac(Date fechaNac) {
-        this.fechaNac = fechaNac;
+    public void setFechaNac(String fechaNac) throws ParseException {
+        this.fechaNac = Utilities.sdf.parse(fechaNac);
     }
 
-    public float getNotaFinal() {
-        return notaFinal;
+    public float getNotaMedia() {
+        return notaMedia;
     }
 
-    public void setNotaFinal(float notaFinal) {
-        this.notaFinal = notaFinal;
+    public void setNotaMedia(float notaFinal) {
+        this.notaMedia = notaFinal;
     }
 
     public int getEdad() {
@@ -61,5 +68,10 @@ public class Alumno {
     public void setEdad(int edad) {
         this.edad = edad;
     }
-    
+    @Override
+    public String toString() {
+        return ""+ getMatricula() + "*" + getNombre() +
+                            "*" + getFechaNac() + "*" + getNotaMedia()+ 
+                            "*" + getEdad() + "\n";
+    }
 }
