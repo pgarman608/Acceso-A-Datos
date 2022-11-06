@@ -17,8 +17,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javaapplication4.Modelo.Alumno;
 import javaapplication4.Modelo.Filtro;
 import javax.xml.parsers.DocumentBuilder;
