@@ -239,11 +239,13 @@
         <Component class="javax.swing.JComboBox" name="jcb_Importar">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
+              <StringArray count="6">
                 <StringItem index="0" value="Ficheros Planos"/>
                 <StringItem index="1" value="Ficheros Serializable"/>
                 <StringItem index="2" value="Ficheros de Acceso Random"/>
                 <StringItem index="3" value="Ficheros XML"/>
+                <StringItem index="4" value="Ficheros JSON"/>
+                <StringItem index="5" value=" "/>
               </StringArray>
             </Property>
           </Properties>
@@ -342,11 +344,13 @@
         <Component class="javax.swing.JComboBox" name="jcb_Exportar">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
+              <StringArray count="6">
                 <StringItem index="0" value="Ficheros Planos"/>
                 <StringItem index="1" value="Ficheros Serializable"/>
                 <StringItem index="2" value="Ficheros de Acceso Random"/>
                 <StringItem index="3" value="Ficheros XML"/>
+                <StringItem index="4" value="Ficheros JSON"/>
+                <StringItem index="5" value=""/>
               </StringArray>
             </Property>
           </Properties>

@@ -21,21 +21,29 @@ public class Index extends javax.swing.JFrame {
         //Tendremos un modelo de la tabla para poder añadir y eliminar
         modelo = (DefaultTableModel) this.jt_Alumnos.getModel();
         jt_Alumnos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //Inicializar
+        //Inicializamos el fileChooser
         elegirFichero = new JFileChooser();
+        //Le decimos al fileChooser que solo podamos elegir ficheros
         elegirFichero.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        //Inicializaremos el objeto para filtrar la tabla con el modelo
         tableRS = new TableRowSorter(modelo);
+        //Enlazaremos el filtro con la tabla
         jt_Alumnos.setRowSorter(tableRS);
+        //Crearemos un listener para la tabla
         jt_Alumnos.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt){
+                //Recogeremos en un número la posición de la fila
                 int row = jt_Alumnos.rowAtPoint(evt.getPoint());
                 if (row >= 0) {
+                    //Guardaremos la matrícula de la fila seleccionada en una variable externa
                     numMatriculaTabla = (int) jt_Alumnos.getValueAt(row, 0);
                 }
             }
             @Override
             public void mouseReleased(java.awt.event.MouseEvent e) {
+                //Cuando dejemos de pulsar pondremos el número de matrícula externa
+                //en -1
                 numMatriculaTabla = -1;
             }
         });
@@ -137,7 +145,7 @@ public class Index extends javax.swing.JFrame {
 
         jLabel2.setText("Fichero");
 
-        jcb_Importar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ficheros Planos", "Ficheros Serializable", "Ficheros de Acceso Random", "Ficheros XML" }));
+        jcb_Importar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ficheros Planos", "Ficheros Serializable", "Ficheros de Acceso Random", "Ficheros XML", "Ficheros JSON", " " }));
 
         jbt_Importar.setText("Importar");
         jbt_Importar.addActionListener(new java.awt.event.ActionListener() {
@@ -197,7 +205,7 @@ public class Index extends javax.swing.JFrame {
 
         jLabel4.setText("Nombre");
 
-        jcb_Exportar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ficheros Planos", "Ficheros Serializable", "Ficheros de Acceso Random", "Ficheros XML" }));
+        jcb_Exportar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ficheros Planos", "Ficheros Serializable", "Ficheros de Acceso Random", "Ficheros XML", "Ficheros JSON", "" }));
 
         jbt_Exportar.setText("Exportar");
         jbt_Exportar.addActionListener(new java.awt.event.ActionListener() {
@@ -298,16 +306,24 @@ public class Index extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbt_AltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_AltaActionPerformed
+        //Crearemos un objeto de clase AlumnosjDialog que extiende de jDialog
         AlumnosjDialog addAjD = new AlumnosjDialog(this, true);
+        //Haremos visible el jDialog
         addAjD.setVisible(true);
+        //Actualizaremos la tabla con el método actualizarTabla()
         this.actualizarTabla();
     }//GEN-LAST:event_jbt_AltaActionPerformed
 
     private void jbt_BajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_BajaActionPerformed
+        //Comprobaremos que el número de la matrícula seleccionada de la tabla
         if (numMatriculaTabla >= 0) {
+            //Crearemos un joptionpane para preguntar si está seguro el usuario de
+            //eliminar el usuario y comprobaremos que la opción elegida es "Si"
             if (JOptionPane.showConfirmDialog(this, "¿Estas seguro de elimnar el alumno?") == JOptionPane.OK_OPTION) {
+                //Llamamos al método de dar baja al alumno
                 Utilities.bajaAlumno(numMatriculaTabla);
-                actualizarTabla();
+                //Actualizaremos la tabla con el método actualizarTabla()
+                this.actualizarTabla();
             }
         }else{
             JOptionPane.showMessageDialog(this, "No has seleccionado ningun alumno");
@@ -315,76 +331,121 @@ public class Index extends javax.swing.JFrame {
     }//GEN-LAST:event_jbt_BajaActionPerformed
 
     private void jbt_EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_EditarActionPerformed
+        //Comprobaremos que el número de la matrícula seleccionado de la tabla
         if (numMatriculaTabla >= 0) {
-            System.out.println("1");
+            //Crearemos un objeto de clase AlumnosjDialog que extiende de jDialog
             AlumnosjDialog modAlumnos = new AlumnosjDialog(this, true);
+            //Deshabilitamos el Textfield de matrícula del jDialog
             modAlumnos.setjtfMatriculaEnable(false);
+            //Crearemos una variable temp de tipo Alumno que hemos seleccionado
+            //en la tabla
             Alumno alumnoModificar = Utilities.getAlumnoMatricula(numMatriculaTabla);
+            //Le damos de baja al alumno
             Utilities.bajaAlumno(numMatriculaTabla);
+            //Guardaremos en los textfields el la matrícula, el nombre, la edad,
+            //la fecha y la nota media
             modAlumnos.setjtfMatriculaText(alumnoModificar.getMatricula());
             modAlumnos.setjtfNombreText(alumnoModificar.getNombre());
             modAlumnos.setjtfEdadText(alumnoModificar.getEdad());
             modAlumnos.setjtfFechaNText(alumnoModificar.getFechaNac());
             modAlumnos.setjtfNotaMText(alumnoModificar.getNotaMedia());
+            //Haremos visible el jDialog
             modAlumnos.setVisible(true);
+            //Comprobaremos que el jdialog no se ha cerrado de forma inesperada
             if (modAlumnos.isActive()) {
+                //Volveremos a guardar el alumno eliminado o modificado
                 Utilities.alumnos.add(alumnoModificar);
             }
+            //Actualizaremos la tabla con el método actualizarTabla()
             actualizarTabla();
         }
     }//GEN-LAST:event_jbt_EditarActionPerformed
 
     private void jbt_FiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_FiltroActionPerformed
+        //Crearemos un objeto de clase FilterDialog que extiende de jDialog
         FilterDialog fd = new FilterDialog(this, true);
+        //Haremos visible el jDialog
         fd.setVisible(true);
-        tableRS.setRowFilter(RowFilter.regexFilter(Utilities.filtro.getFiltrar(), Utilities.filtro.getPosicion()));
-        
+        //Le añadiremos el filtro que hemos sacado del filterdialog
+        tableRS.setRowFilter(RowFilter.regexFilter(Utilities.filtro.getFiltrar()
+                , Utilities.filtro.getPosicion()));
     }//GEN-LAST:event_jbt_FiltroActionPerformed
 
     private void jbt_EliFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_EliFiltroActionPerformed
+        //Eliminaremos el filtro de la tabla
         tableRS.setRowFilter(null);
     }//GEN-LAST:event_jbt_EliFiltroActionPerformed
 
     private void jbt_Buscar_IActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_Buscar_IActionPerformed
+        //Aparecerá el fileChooser y comprobaremos que eliga un fichero para guardarlo
         if (elegirFichero.showDialog(this,"Elige el fichero")!= JFileChooser.CANCEL_OPTION) {
+            //Guardaremos el fichero seleccionado al textfield del Importar
             jtf_Importar.setText(elegirFichero.getSelectedFile().toString());
         }
     }//GEN-LAST:event_jbt_Buscar_IActionPerformed
 
     private void jbt_ImportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_ImportarActionPerformed
+        //Crearemos un cursor de un fichero
         File f1 = new File(jtf_Importar.getText());
-        if (f1.exists() && f1.isFile()) {
-            Utilities.importarArchivos(f1,jcb_Importar.getSelectedItem().toString());
+        //Comprobaremos si existe el fichero y si es un fichero
+        try {
+            if (f1.exists() && f1.isFile() && f1.length() > 0) {
+            //Llamaremos al método de importarArchivos para importar el archivo seleccionado
+            int error = Utilities.importarArchivos(f1,jcb_Importar.getSelectedItem().toString());
+            if (error < 1) {
+                JOptionPane.showMessageDialog(rootPane, Utilities.sacarError(error));
+            }
+            //Actualizaremos la tabla con el método actualizarTabla()
             actualizarTabla();
-        }else{
-            JOptionPane.showMessageDialog(this, "EL fichero no existe");
+            }else{
+                JOptionPane.showMessageDialog(this, "EL fichero no existe");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Eliga bien el Fichero a importar"
+                    + "/Error inesperado");
         }
     }//GEN-LAST:event_jbt_ImportarActionPerformed
 
     private void jbt_Buscar_EActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_Buscar_EActionPerformed
+        //Aparecerá el fileChooser y comprobaremos que eliga un fichero para guardarlo
         if (elegirFichero.showDialog(this,"Elige el fichero")!= JFileChooser.CANCEL_OPTION) {
+            //Guardaremos el fichero seleccionado al textfield del Exportar
             jtf_Exportar.setText(elegirFichero.getSelectedFile().getAbsoluteFile().toString());
         }
     }//GEN-LAST:event_jbt_Buscar_EActionPerformed
 
     private void jbt_ExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbt_ExportarActionPerformed
+        //Crearemos un cursor de un fichero
         File f1 = new File(jtf_Exportar.getText());
-        if (f1.exists() && f1.isFile()) {
-            Utilities.exportarArchivos(f1,jcb_Exportar.getSelectedItem().toString());
+        //Comprobaremos si existe el fichero y si es un fichero
+        try {
+            if (f1.exists() && f1.isFile() && f1.length() > 0) {
+            //Llamaremos al método de importarArchivos para importar el archivo seleccionado
+            int error = Utilities.exportarArchivos(f1,jcb_Exportar.getSelectedItem().toString());
+            if (error < 1) {
+                JOptionPane.showMessageDialog(rootPane, Utilities.sacarError(error));
+            }
         }else{
             JOptionPane.showMessageDialog(this, "EL fichero no existe");
+        }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Eliga bien el Fichero a exportar"
+                    + "/Error inesperado");
         }
     }//GEN-LAST:event_jbt_ExportarActionPerformed
 
     private void actualizarTabla(){
+        //Pondremos el numero de filas a 0
         modelo.setRowCount(0);
         for (int i = 0; i < Utilities.alumnos.size(); i++) {
+            //Crearemos un array de objetos para guardar el alumno
             Object[] rowAlumno = new Object[5];
             rowAlumno[0] = Utilities.alumnos.get(i).getMatricula();
             rowAlumno[1] = Utilities.alumnos.get(i).getNombre();
             rowAlumno[2] = Utilities.alumnos.get(i).getFechaNac();
             rowAlumno[3] = Utilities.alumnos.get(i).getNotaMedia();
             rowAlumno[4] = Utilities.alumnos.get(i).getEdad();
+            //Añadiremos el array de objetos a la tabla
             this.modelo.addRow(rowAlumno);
         }
     }

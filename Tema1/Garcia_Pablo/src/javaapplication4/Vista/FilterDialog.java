@@ -11,12 +11,15 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
     public FilterDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        //Inicializaremos la posición de la elección de radiobutton en 0
         posSelect = 0;
+        //Deshabilitaremos los txtfiels de inicio
         jtfFechaNF.setEnabled(false);
         jtfMatriculaF.setEnabled(false);
         jtfNotaMF.setEnabled(false);
         jtfNombreF.setEnabled(false);
         jtfEdadF.setEnabled(false);
+        //Añadiremos el actionListener implementados en la clase
         jrbEdad.addActionListener(this);
         jrbFecha.addActionListener(this);
         jrbMatricula.addActionListener(this);
@@ -53,7 +56,7 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
         jrbNombre.setText("Nombre");
 
         bgFiltros.add(jrbFecha);
-        jrbFecha.setText("FechaN");
+        jrbFecha.setText("Fecha de Nacimiento");
 
         bgFiltros.add(jrbNotaM);
         jrbNotaM.setText("Nota Media");
@@ -133,18 +136,24 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtFiltrarActionPerformed
+        //Comprobamos que la posición seleccionada no sea 0
         if (posSelect == 0) {
             JOptionPane.showMessageDialog(this,"Elije e introduze el datos");
         }else{
+            //Crearemos un array de String para guardar el texto escrito
             String[] textFields = new String[5];
             textFields[4] = jtfEdadF.getText();
             textFields[0] = jtfMatriculaF.getText();
             textFields[2] = jtfFechaNF.getText();
             textFields[1] = jtfNombreF.getText();
             textFields[3] = jtfNotaMF.getText();
+            //Comprobaremos los txtfields del filtro
             if (Utilities.comprobartfFiltros(textFields,posSelect-1) == 1) {
+                //Guardaremos en una variable creada en utilites de la clase Filtro
+                //que guardará la información a filtrar y su posición
                 Utilities.filtro.setFiltrar(textFields[posSelect-1]);
                 Utilities.filtro.setPosicion(posSelect-1);
+                //Cerraremos el jDialog
                 this.dispose();
             }else{
                 JOptionPane.showMessageDialog(this, "Introduzca informacion "
@@ -210,12 +219,16 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        //Crearemos una variable que será el radiobutton seleccionado
         JRadioButton selected = (JRadioButton) e.getSource();
-        String textMatricula = this.jrbMatricula.getText();
+        //Tendremos un switch donde cogeremos el texto del radioButton
         switch(String.valueOf( selected.getText())){
             case "Matricula":
+                //Setearemos el posSelect a 1
                 posSelect = 1;
+                //Vaciaremos los textFields
                 vaciarTextfield();
+                //Habilitaremos el matricula y deshabilitaremos los otros textfields
                 jtfFechaNF.setEnabled(false);
                 jtfMatriculaF.setEnabled(true);
                 jtfNotaMF.setEnabled(false);
@@ -223,17 +236,23 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
                 jtfEdadF.setEnabled(false);
                 break;
             case "Nombre":
+                //Setearemos el posSelect a 2
                 posSelect = 2;
+                //Vaciaremos los textFields
                 vaciarTextfield();
+                //Habilitaremos el nombre y deshabilitaremos los otros textfields
                 jtfFechaNF.setEnabled(false);
                 jtfMatriculaF.setEnabled(false);
                 jtfNotaMF.setEnabled(false);
                 jtfNombreF.setEnabled(true);
                 jtfEdadF.setEnabled(false);
                 break;
-            case "FechaN":
+            case "Fecha de Nacimiento":
+                //Setearemos el posSelect a 3
                 posSelect = 3;
+                //Vaciaremos los textFields
                 vaciarTextfield();
+                //Habilitaremos el fecha y deshabilitaremos los otros textfields
                 jtfFechaNF.setEnabled(true);
                 jtfMatriculaF.setEnabled(false);
                 jtfNotaMF.setEnabled(false);
@@ -241,8 +260,11 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
                 jtfEdadF.setEnabled(false);
                 break;
             case "Nota Media":
+                //Setearemos el posSelect a 4
                 posSelect = 4;
+                //Vaciaremos los textFields
                 vaciarTextfield();
+                //Habilitaremos el nota Media y deshabilitaremos los otros textfields
                 jtfFechaNF.setEnabled(false);
                 jtfMatriculaF.setEnabled(false);
                 jtfNotaMF.setEnabled(true);
@@ -250,8 +272,11 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
                 jtfEdadF.setEnabled(false);
                 break;
             case "Edad":
+                //Setearemos el posSelect a 5
                 posSelect = 5;
+                //Vaciaremos los textFields
                 vaciarTextfield();
+                //Habilitaremos el edad y deshabilitaremos los otros textfields
                 jtfFechaNF.setEnabled(false);
                 jtfMatriculaF.setEnabled(false);
                 jtfNotaMF.setEnabled(false);
@@ -261,6 +286,7 @@ public class FilterDialog extends javax.swing.JDialog implements ActionListener{
         }
     }
     private void vaciarTextfield(){
+        //Vaciaremos los textField
         jtfFechaNF.setText("");
         jtfMatriculaF.setText("");
         jtfNotaMF.setText("");

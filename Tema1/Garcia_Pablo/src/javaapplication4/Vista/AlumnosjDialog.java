@@ -7,12 +7,9 @@ import javaapplication4.Controlador.Utilities;
 import javax.swing.JOptionPane;
 
 public class AlumnosjDialog extends javax.swing.JDialog {
-    public int exited;
     public AlumnosjDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.setTitle("Alumno/a");
-        exited = 1;
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -32,6 +29,7 @@ public class AlumnosjDialog extends javax.swing.JDialog {
         jbtConfirmar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Alumno/a");
 
         jLabel1.setText("Alumno/a");
 
@@ -117,20 +115,27 @@ public class AlumnosjDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtConfirmarActionPerformed
-        Object[] objAlumno = new Object[5];
+        //Crearemos un array de Objetos con la información del alumno introducido
+        String[] objAlumno = new String[5];
         objAlumno[0] = jtfMatricula.getText();
         objAlumno[1] = jtfNombre.getText();
         objAlumno[2] = jtfFecha.getText();
         objAlumno[3] = jtfNotaM.getText();
         objAlumno[4] = jtfEdad.getText();
         try {
+            //Comprobaremos el tipo de los datos del array y la información introducida
             if (Utilities.comprobarTipoAlumno(objAlumno) == 1 && Utilities.comprobarAlumno(objAlumno) == 1) {
-                if (Utilities.existeAlumno(Integer.parseInt((String)objAlumno[0])) == 1) {
-                    if (Utilities.comprobarCharEspeciales((String)objAlumno[1]) == 1) {
-                        String nombreLenght = (String)objAlumno[1];
-                        if (nombreLenght.length() < 50) {
+                //Comprobaremos si existe el alumno
+                if (Utilities.existeAlumno(Integer.parseInt(objAlumno[0])) == 1) {
+                    //Comprobaremos si el nombre tiene caracteres especiales
+                    if (Utilities.comprobarCharEspeciales(objAlumno[1]) == 1) {
+                        //Comprobaremos la cantidad de caracteres especiales
+                        if (objAlumno[1].length() < 50) {
+                            //Le preguntaremos si el usuario está seguro y comprobaremos
                             if (JOptionPane.showConfirmDialog(this, "¿Estas Seguro?") == JOptionPane.OK_OPTION) {
+                                //Añadiremos el alumno
                                 Utilities.darAlta(objAlumno);
+                                //Cerraremos el jDialog
                                 this.dispose();
                             }
                         }else{
@@ -191,6 +196,7 @@ public class AlumnosjDialog extends javax.swing.JDialog {
             }
         });
     }
+    //Setters de los textFields 
     public void setjtfMatriculaEnable(boolean enable){
         jtfMatricula.setEnabled(enable);
     }
