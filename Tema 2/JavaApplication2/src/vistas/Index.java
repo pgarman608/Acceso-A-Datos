@@ -1,17 +1,19 @@
 package vistas;
 
-import controladores.CtlAlumnos;
+import controladores.CtlTablas;
 import controladores.CtlSQL;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
 
-public class Index extends javax.swing.JFrame {
+public class Index extends javax.swing.JFrame{
     
     private DefaultTableModel modeloTablaAlumnos;
     private DefaultTableModel modeloTablaCursos;
@@ -23,23 +25,28 @@ public class Index extends javax.swing.JFrame {
     private ArrayList<Matriculado> listMatriculados;
     private ArrayList<Examen> listExamenes;
     
-    private int rowTableAlumnos;
-    private int rowTableCursos;
-    private int rowTableMatriculados;
+    private String rowTableAlumnos;
+    private String rowTableCursos;
+    private String rowTableMatriculados;
     private int rowTableExamenes;
     
+    private CtlTablas contTablas;
+    
     public static Connection con;
+    
     public Index() {
         initComponents();
         modeloTablaAlumnos = (DefaultTableModel) jTableAlumnos.getModel();
         modeloTablaCursos = (DefaultTableModel) jTableCursos.getModel();
-        modeloTablaMatriculados = (DefaultTableModel) JTableMatriculas.getModel();
-        modeloTablaExamenes = (DefaultTableModel) JTableExamenes.getModel();
+        modeloTablaMatriculados = (DefaultTableModel) jTableMatriculas.getModel();
+        modeloTablaExamenes = (DefaultTableModel) jTableExamenes.getModel();
         
-        jTableAlumnos.setModel(modeloTablaAlumnos);
-        jTableCursos.setModel(modeloTablaCursos);
-        JTableMatriculas.setModel(modeloTablaMatriculados);
-        jTableCursos.setModel(modeloTablaExamenes);
+        jTableAlumnos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTableMatriculas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTableCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTableExamenes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        contTablas = new CtlTablas();
         
         try {
             con = new CtlSQL().conectarSQL();
@@ -48,9 +55,47 @@ public class Index extends javax.swing.JFrame {
             System.exit(0);
         }
         
-        listAlumnos = new CtlAlumnos().recogerAlumnos();
-        
+        listAlumnos = contTablas.recogerAlumnos();
+        listCursos = contTablas.recogerCursos();
         actualizarTablaAlumnos();
+        actualizarTablaCursos();
+        
+        jTableAlumnos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = jTableAlumnos.rowAtPoint(e.getPoint());
+                if (row >= 0) {
+                    rowTableAlumnos = jTableAlumnos.getValueAt(row, 0).toString();
+                }
+            }
+});
+        jTableCursos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = jTableCursos.rowAtPoint(e.getPoint());
+                if (row >= 0) {
+                    rowTableAlumnos = jTableCursos.getValueAt(row, 0).toString();
+                }
+            }
+});
+        jTableMatriculas.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = jTableMatriculas.rowAtPoint(e.getPoint());
+                if (row >= 0) {
+                    rowTableAlumnos = jTableMatriculas.getValueAt(row, 0).toString();
+                }
+            }
+});
+        jTableExamenes.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = jTableExamenes.rowAtPoint(e.getPoint());
+                if (row >= 0) {
+                    rowTableAlumnos = jTableExamenes.getValueAt(row, 0).toString();
+                }
+            }
+});
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -62,14 +107,14 @@ public class Index extends javax.swing.JFrame {
         jTableCursos = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        JTableMatriculas = new javax.swing.JTable();
+        jTableMatriculas = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        JTableExamenes = new javax.swing.JTable();
+        jTableExamenes = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
@@ -130,12 +175,12 @@ public class Index extends javax.swing.JFrame {
 
         jButton1.setText("Matricular alumno en el curso");
 
-        JTableMatriculas.setModel(new javax.swing.table.DefaultTableModel(
+        jTableMatriculas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Codigo Alumno", "Nombre Alumno", "Codigo Curso", "Nombre Curso", "Nº Examenes"
+                "Codigo Alumno", "Nombre Alumno", "Codigo Curso", "Nombre Curso", "Nota Media"
             }
         ) {
             Class[] types = new Class [] {
@@ -153,7 +198,7 @@ public class Index extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(JTableMatriculas);
+        jScrollPane3.setViewportView(jTableMatriculas);
 
         jLabel1.setText("Fecha del examen");
 
@@ -161,7 +206,7 @@ public class Index extends javax.swing.JFrame {
 
         jButton2.setText("Actualizar");
 
-        JTableExamenes.setModel(new javax.swing.table.DefaultTableModel(
+        jTableExamenes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -184,7 +229,7 @@ public class Index extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane4.setViewportView(JTableExamenes);
+        jScrollPane4.setViewportView(jTableExamenes);
 
         jButton3.setText("jButton3");
 
@@ -290,8 +335,6 @@ public class Index extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable JTableExamenes;
-    private javax.swing.JTable JTableMatriculas;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -304,6 +347,8 @@ public class Index extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTableAlumnos;
     private javax.swing.JTable jTableCursos;
+    private javax.swing.JTable jTableExamenes;
+    private javax.swing.JTable jTableMatriculas;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
@@ -324,6 +369,7 @@ public class Index extends javax.swing.JFrame {
             curso[1] = listCursos.get(i).getNombreCurso();
             curso[2] = listCursos.get(i).getnExamenes();
             modeloTablaCursos.addRow(curso);
+            
         }
     }
     private void actualizarTablaMatriculados(){
