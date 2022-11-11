@@ -3,9 +3,9 @@ package modelos;
 public class Examen {
     private int nExamen;
     private String fecha;
-    private int nota;
+    private double nota;
 
-    public Examen(int nExamen, String fecha, int nota) {
+    public Examen(int nExamen, String fecha, double nota) {
         this.nExamen = nExamen;
         this.fecha = fecha;
         this.nota = nota;
@@ -30,11 +30,11 @@ public class Examen {
         this.fecha = fecha;
     }
 
-    public int getNota() {
+    public double getNota() {
         return nota;
     }
 
-    public void setNota(int nota) {
+    public void setNota(double nota) {
         this.nota = nota;
     }
 

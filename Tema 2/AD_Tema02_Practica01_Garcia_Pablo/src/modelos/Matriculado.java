@@ -5,14 +5,14 @@ public class Matriculado {
     private String nombreAlumno;
     private String codigoCurso;
     private String nombreCurso;
-    private int nExamenes;
+    private double notaMedia;
 
-    public Matriculado(String codigoAlumno, String nombreAlumno, String codigoCurso, String nombreCurso, int nExamenes) {
+    public Matriculado(String codigoAlumno, String nombreAlumno, String codigoCurso, String nombreCurso, double notaMedia) {
         this.codigoAlumno = codigoAlumno;
         this.nombreAlumno = nombreAlumno;
         this.codigoCurso = codigoCurso;
         this.nombreCurso = nombreCurso;
-        this.nExamenes = nExamenes;
+        this.notaMedia = notaMedia;
     }
 
     public Matriculado() {
@@ -50,12 +50,12 @@ public class Matriculado {
         this.nombreCurso = nombreCurso;
     }
 
-    public int getnExamenes() {
-        return nExamenes;
+    public double getnExamenes() {
+        return notaMedia;
     }
 
-    public void setnExamenes(int nExamenes) {
-        this.nExamenes = nExamenes;
+    public void setnExamenes(double notaMedia) {
+        this.notaMedia = notaMedia;
     }
 
     @Override
