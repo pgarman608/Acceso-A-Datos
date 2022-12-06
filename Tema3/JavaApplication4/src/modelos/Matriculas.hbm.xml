@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 02-dic-2022 14:08:38 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="modelos.Matriculas" table="MATRICULAS" schema="AD_ACADEMIA1" optimistic-lock="version">
+        <composite-id name="id" class="modelos.MatriculasId">
+            <key-property name="ccodalu" type="string">
+                <column name="CCODALU" length="6" />
+            </key-property>
+            <key-property name="ccodcurso" type="string">
+                <column name="CCODCURSO" length="6" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="alumnos" class="modelos.Alumnos" update="false" insert="false" fetch="select">
+            <column name="CCODALU" length="6" not-null="true" />
+        </many-to-one>
+        <many-to-one name="cursos" class="modelos.Cursos" update="false" insert="false" fetch="select">
+            <column name="CCODCURSO" length="6" not-null="true" />
+        </many-to-one>
+        <property name="nnotamedia" type="short">
+            <column name="NNOTAMEDIA" precision="3" scale="0" not-null="true" />
+        </property>
+        <set name="exameneses" table="EXAMENES" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="CCODALU" length="6" not-null="true" />
+                <column name="CCODCURSO" length="6" not-null="true" />
+            </key>
+            <one-to-many class="modelos.Examenes" />
+        </set>
+    </class>
+</hibernate-mapping>
