@@ -1,0 +1,23 @@
+{
+	"Matricula": {
+		"CodigoAlumno" : "003",
+		"CodigoCurso" : "F001"
+	},
+	"Examenes": [
+		{
+			"Numero": "1",
+			"Fecha": "2020-10-10",
+			"Nota": "8"
+		},
+		{
+			"Numero": "2",
+			"Fecha": "null",
+			"Nota": "0"
+		},
+		{
+			"Numero": "3",
+			"Fecha": "null",
+			"Nota": "0"
+		}
+	]
+}
